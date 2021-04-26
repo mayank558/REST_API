@@ -1,0 +1,108 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InternShip Task</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <link href="https://fonts.googleapis.com/css?family=Montserrat&display=swap" rel="stylesheet">
+
+    <style type="text/css">
+        body {
+            background: rgb(54, 217, 182);
+            background: linear-gradient(90deg, rgba(54, 217, 182, 1) 0%, rgba(32, 152, 126, 1) 43%, rgba(0, 212, 255, 1) 100%);
+        }
+    </style>
+</head>
+
+<body>
+
+    <form>
+        <input type="input" id="name" placeholder="Name">
+        <input type="input" id="column" placeholder="Coloumn_id">
+        <input type="input" id="imageurl" placeholder="Image URL">
+        <input type="input" id="Description" placeholder="Description">
+        <button id="Sign-up-form-submit" onclick="post()">POST</button>
+    </form>
+    <div id="mid">
+
+    </div>
+</body>
+
+</html>
+<script>
+    function buildBookList() {
+        var memeList = document.getElementById('mid');
+        console.log(memeList);
+        var url = 'http://127.0.0.1:8000/api/task-list';
+
+        fetch(url)
+            .then((resp) => resp.json())
+            .then(function(data) {
+                var list = data;
+                for (var i in list) {
+                    var k = `<p>
+                        <ul>
+                        <li><img src="${list[i].Iamge}"></li>
+                        <li>${list[i].name}</li>
+                        <li>${list[i].description}</li>
+                        <li>
+                            ${list[i].coloumn_id}
+                        </li>
+
+                        </ul>
+                    </p>`
+                    memeList.innerHTML += k;
+                    console.log(list[i]);
+                }
+            })
+
+    }
+    buildBookList();
+
+    function post() {
+        console.log("op")
+        let column = document.getElementById('column').value
+        let name = document.getElementById('name').value
+        let url2 = document.getElementById('imageurl').value
+        let cap = document.getElementById('Description').value
+
+        let data = JSON.stringify({
+            "coloumn_id": column,
+            "name": name,
+            "Iamge": url2,
+            "description": cap
+        });
+        let csrftoken = getCookie('csrftoken');
+        console.log(data);
+        let url1 = "http://127.0.0.1:8000/api/task-edit/"
+        console.log(url1)
+        let response = fetch(url1, {
+            method: "POST",
+            body: data,
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json',
+                "X-CSRFToken": csrftoken
+            },
+        })
+        console.log(response);
+    }
+
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+</script>
